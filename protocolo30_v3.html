@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Protocolo 30D">
+<title>Protocolo 30 Dias</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231a7a3c'/><text x='50' y='66' font-family='Arial Black' font-size='44' font-weight='900' fill='white' text-anchor='middle'>30</text></svg>">
+<link rel="apple-touch-icon" id="ati" href="">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#ffffff; --bg2:#f5f5f3; --bg3:#ebebea; --bg4:#e0e0de;
+  --green:#1a7a3c; --gl:#e6f4ec; --gm:#a8d5b8;
+  --amber:#92400e; --al:#fef3c7; --am:#f59e0b;
+  --red:#991b1b; --rl:#fee2e2;
+  --blue:#1e3a8a; --bl:#dbeafe;
+  --text:#0f0f0f; --text2:#3d3d3d; --text3:#737373;
+  --border:#d4d4d0; --border2:#b8b8b4;
+  --shadow:0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+}
+[data-theme="dark"] {
+  --bg:#0c0c0c; --bg2:#171717; --bg3:#222; --bg4:#2a2a2a;
+  --green:#4ade80; --gl:#052e16; --gm:#14532d;
+  --amber:#fbbf24; --al:#1c1400; --am:#d97706;
+  --red:#f87171; --rl:#2d0a0a;
+  --blue:#93c5fd; --bl:#0c1a3d;
+  --text:#f5f5f5; --text2:#d4d4d4; --text3:#737373;
+  --border:#2a2a2a; --border2:#3d3d3d;
+  --shadow:0 1px 3px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow:hidden;}
+body{display:flex;flex-direction:column;}
+::-webkit-scrollbar{display:none;}
+input,select,textarea,button{font-family:'DM Sans',sans-serif;}
+
+/* SETUP SCREEN */
+#setup{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;flex-direction:column;overflow-y:auto;}
+.sw{flex:1;display:flex;flex-direction:column;padding:56px 24px 36px;max-width:480px;margin:0 auto;width:100%;}
+.s-step{display:none;flex-direction:column;flex:1;}
+.s-step.active{display:flex;}
+.s-logo{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:800;letter-spacing:.15em;color:var(--green);text-transform:uppercase;margin-bottom:28px;}
+.s-title{font-family:'Barlow Condensed',sans-serif;font-size:38px;font-weight:900;line-height:1.0;color:var(--text);text-transform:uppercase;margin-bottom:6px;}
+.s-sub{font-size:14px;color:var(--text2);line-height:1.55;margin-bottom:28px;}
+.s-prog{display:flex;gap:5px;margin-bottom:24px;}
+.s-dot{flex:1;height:3px;border-radius:99px;background:var(--border);transition:background .25s;}
+.s-dot.on{background:var(--green);}
+.s-field{margin-bottom:14px;}
+.s-lbl{font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;display:block;}
+.s-in{width:100%;padding:12px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:16px;background:var(--bg2);color:var(--text);outline:none;transition:border-color .15s;-webkit-appearance:none;}
+.s-in:focus{border-color:var(--green);}
+.s-sel{width:100%;padding:12px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:15px;background:var(--bg2);color:var(--text);outline:none;-webkit-appearance:none;appearance:none;}
+.s-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.s-opt{padding:14px 8px;border:1.5px solid var(--border);border-radius:12px;text-align:center;cursor:pointer;background:var(--bg2);transition:all .15s;}
+.s-opt.on{border-color:var(--green);background:var(--gl);}
+.s-opt-t{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;text-transform:uppercase;color:var(--text);margin-bottom:2px;}
+.s-opt.on .s-opt-t{color:var(--green);}
+.s-opt-s{font-size:11px;color:var(--text3);}
+.s-opt.on .s-opt-s{color:var(--green);}
+.s-btn{width:100%;padding:15px;background:var(--green);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:500;cursor:pointer;margin-top:auto;}
+.s-back{text-align:center;font-size:13px;color:var(--text3);margin-top:10px;cursor:pointer;}
+
+/* APP */
+#app{display:none;flex-direction:column;height:100%;}
+#app.show{display:flex;}
+.hdr{padding:52px 16px 11px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;}
+.hdr-row{display:flex;justify-content:space-between;align-items:flex-start;}
+.hdr-l .ey{font-size:10px;font-weight:500;letter-spacing:.12em;color:var(--green);text-transform:uppercase;margin-bottom:2px;}
+.hdr-l .ht{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;line-height:1;color:var(--text);text-transform:uppercase;}
+.hdr-l .hs{font-size:11px;color:var(--text3);margin-top:3px;}
+.hdr-r{display:flex;gap:8px;align-items:flex-start;}
+.daybox{text-align:right;}
+.dayn{font-family:'Barlow Condensed',sans-serif;font-size:38px;font-weight:900;line-height:1;color:var(--green);}
+.dayl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
+.icon-btn{width:30px;height:30px;border-radius:50%;border:1px solid var(--border);background:var(--bg2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;margin-top:2px;flex-shrink:0;}
+
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:72px;}
+.sec{display:none;padding:10px 0 0;}
+.sec.active{display:block;}
+
+.tabbar{position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -1px 6px rgba(0,0,0,.05);}
+.tab{flex:1;padding:8px 2px 5px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;background:none;border:none;color:var(--text3);font-size:9px;letter-spacing:.02em;}
+.tab.active{color:var(--green);}
+.ti{font-size:17px;line-height:1;}
+
+/* CARDS */
+.card{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:14px;margin:8px 14px 0;box-shadow:var(--shadow);}
+.ct{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text);margin-bottom:10px;}
+.card-g{border-color:var(--gm);background:var(--gl);}
+.card-a{border-color:var(--am);background:var(--al);}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px 14px 0;}
+.sc{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:11px 13px;}
+.sl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;}
+.sv{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;color:var(--green);line-height:1;}
+.su{font-size:11px;font-weight:400;color:var(--text3);}
+.row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);gap:8px;}
+.row:last-child{border-bottom:none;}
+.rl{font-size:13px;color:var(--text2);flex-shrink:0;}
+.rv{font-size:13px;font-weight:500;color:var(--text);text-align:right;line-height:1.3;}
+.badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:99px;font-weight:600;margin-left:4px;}
+.bg{background:var(--gl);color:var(--green);}
+.ba{background:var(--al);color:var(--amber);}
+.bb{background:var(--bl);color:var(--blue);}
+
+/* WORKOUTS */
+.tsel{display:flex;gap:6px;padding:8px 14px 0;overflow-x:auto;}
+.tsel::-webkit-scrollbar{display:none;}
+.tbtn{flex-shrink:0;padding:6px 14px;border-radius:99px;border:1px solid var(--border2);background:var(--bg2);color:var(--text2);font-size:12px;cursor:pointer;white-space:nowrap;transition:all .15s;}
+.tbtn.active{background:var(--green);border-color:var(--green);color:#fff;font-weight:500;}
+.tblk{display:none;}
+.tblk.active{display:block;}
+.th{padding:10px 14px 0;}
+.tn2{font-family:'Barlow Condensed',sans-serif;font-size:27px;font-weight:900;text-transform:uppercase;color:var(--text);}
+.td2{font-size:12px;color:var(--text2);}
+.tm{display:flex;gap:5px;margin-top:5px;flex-wrap:wrap;}
+.tmi{font-size:11px;color:var(--text2);background:var(--bg2);padding:3px 9px;border-radius:99px;border:1px solid var(--border);}
+.ex{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);}
+.ex:last-child{border-bottom:none;}
+.en{font-size:13px;color:var(--text);}
+.es{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--green);}
+.ec{color:var(--text3);font-style:italic;font-size:12px;}
+
+/* CHECKLIST */
+.chi{display:flex;align-items:flex-start;gap:11px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.chi:last-child{border-bottom:none;}
+.chb{width:21px;height:21px;border:2px solid var(--border2);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;margin-top:1px;}
+.chb.on{background:var(--green);border-color:var(--green);}
+.chb.on::after{content:'';display:block;width:5px;height:9px;border:2px solid #fff;border-top:none;border-left:none;transform:rotate(45deg) translateY(-1px);}
+.cht{font-size:13px;color:var(--text);line-height:1.35;}
+.cht.done{color:var(--text3);text-decoration:line-through;}
+.chs{font-size:11px;color:var(--text3);margin-top:1px;}
+.pbl{height:5px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-top:5px;}
+.pbf{height:100%;background:var(--green);border-radius:99px;transition:width .35s;}
+.prow{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:2px;}
+
+/* TIMELINE */
+.tl{padding-left:20px;position:relative;}
+.tl::before{content:'';position:absolute;left:6px;top:6px;bottom:6px;width:1px;background:var(--border2);}
+.tli{position:relative;margin-bottom:13px;}
+.tld{position:absolute;left:-20px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--bg);border:2px solid var(--border2);}
+.tlt{font-size:10px;color:var(--green);font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.09em;}
+.tlx{font-size:13px;color:var(--text);margin-top:1px;}
+.tlb{font-size:11px;color:var(--text3);margin-top:2px;line-height:1.4;}
+
+/* MONTH GRID */
+.mgr{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.md{aspect-ratio:1;border-radius:7px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text3);cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;transition:all .15s;}
+.md.done{background:var(--gl);border-color:var(--gm);color:var(--green);}
+.md.rest{background:var(--bg);color:var(--border);cursor:default;font-size:8px;}
+.md.fut{opacity:.28;cursor:default;}
+.md.today{border-color:var(--am);color:var(--amber);background:var(--al);}
+
+/* SUPPS */
+.sg2{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.sc2{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:11px;}
+.sn{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;color:var(--text);margin-bottom:2px;}
+.sd{font-size:12px;color:var(--green);font-weight:500;margin-bottom:3px;}
+.sw2{font-size:11px;color:var(--text2);line-height:1.4;}
+.sc2.pri{border-color:var(--gm);background:var(--gl);}
+.sc2.pri .sn{color:var(--green);}
+
+/* CHAT */
+.chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 130px);}
+.qbtns{display:flex;gap:5px;padding:8px 14px;overflow-x:auto;flex-shrink:0;}
+.qbtns::-webkit-scrollbar{display:none;}
+.qb{flex-shrink:0;padding:6px 11px;border-radius:99px;border:1px solid var(--border2);background:var(--bg2);color:var(--text2);font-size:12px;cursor:pointer;white-space:nowrap;}
+.msgs{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:8px;}
+.msg{max-width:84%;padding:9px 12px;border-radius:14px;font-size:13px;line-height:1.5;}
+.msg.user{background:var(--green);color:#fff;align-self:flex-end;border-radius:14px 14px 3px 14px;}
+.msg.ai{background:var(--bg2);color:var(--text);align-self:flex-start;border:1px solid var(--border);border-radius:14px 14px 14px 3px;}
+.chat-ft{padding:9px 14px;border-top:1px solid var(--border);background:var(--bg);display:flex;gap:7px;align-items:flex-end;flex-shrink:0;}
+.chin{flex:1;padding:9px 12px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;background:var(--bg2);color:var(--text);resize:none;outline:none;max-height:90px;transition:border-color .15s;}
+.chin:focus{border-color:var(--green);}
+.csend{width:36px;height:36px;border-radius:50%;background:var(--green);border:none;cursor:pointer;color:#fff;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.csend:disabled{opacity:.35;cursor:default;}
+.no-key{padding:24px 20px;text-align:center;color:var(--text2);font-size:13px;line-height:1.6;}
+.no-key a{color:var(--green);cursor:pointer;}
+
+/* SETTINGS */
+#smodal{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:none;align-items:flex-end;}
+#smodal.open{display:flex;}
+.ssheet{background:var(--bg);border-radius:20px 20px 0 0;padding:22px 18px 40px;width:100%;max-height:80vh;overflow-y:auto;}
+.sstitle{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:900;text-transform:uppercase;color:var(--text);margin-bottom:18px;}
+.ssrow{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--border);}
+.sslbl{font-size:13px;color:var(--text);}
+.ssval{font-size:13px;color:var(--text2);}
+.tog{width:42px;height:23px;border-radius:99px;background:var(--border2);position:relative;cursor:pointer;transition:background .2s;}
+.tog.on{background:var(--green);}
+.tog::after{content:'';position:absolute;width:17px;height:17px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.tog.on::after{transform:translateX(19px);}
+.ssin{width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:9px;font-size:13px;background:var(--bg2);color:var(--text);outline:none;margin-top:5px;}
+.ssin:focus{border-color:var(--green);}
+.ssbtn{width:100%;padding:12px;border-radius:10px;border:none;cursor:pointer;font-size:14px;font-weight:500;margin-top:6px;}
+.ssbtn-g{background:var(--green);color:#fff;}
+.ssbtn-r{background:var(--rl);color:var(--red);margin-top:14px;}
+
+/* WEIGHT LOG */
+.wlog{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.wlog:last-child{border-bottom:none;}
+.wld{color:var(--text2);}
+.wlv{font-weight:500;color:var(--text);}
+.diff{font-size:11px;padding:1px 6px;border-radius:99px;}
+
+/* MOTIVATION */
+.mot{border-left:3px solid var(--green);background:var(--bg2);border-radius:0 10px 10px 0;padding:12px;margin:8px 14px 0;}
+.mot-t{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;text-transform:uppercase;color:var(--green);margin-bottom:5px;}
+.mot-b{font-size:13px;color:var(--text2);line-height:1.6;}
+
+/* HUNGER PILLS */
+.hp{display:inline-flex;background:var(--gl);border:1px solid var(--gm);color:var(--green);font-size:11px;font-weight:500;padding:3px 9px;border-radius:99px;margin:2px;}
+
+/* FREE MEAL */
+.fm{border:2px solid var(--am);border-radius:12px;padding:13px;background:var(--al);margin:8px 14px 0;}
+.fmt{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;text-transform:uppercase;color:var(--amber);margin-bottom:5px;}
+
+/* GYMRATS */
+.grs{display:flex;gap:9px;align-items:flex-start;margin-bottom:11px;}
+.grn{width:25px;height:25px;border-radius:50%;background:var(--green);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.grt{font-size:13px;color:var(--text);line-height:1.5;padding-top:2px;}
+.grt strong{color:var(--green);}
+.grbox{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:11px;margin-bottom:7px;}
+.grbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.09em;margin-bottom:3px;}
+.grbv{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--green);}
+.grbs{font-size:12px;color:var(--text2);margin-top:2px;}
+
+.gap{height:10px;}
+.prog-bar{height:4px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-top:4px;}
+.prog-fill{height:100%;background:var(--green);border-radius:99px;transition:width .4s;}
+.prog-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);}
+</style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div id="setup">
+<div class="sw">
+  <div class="s-prog" id="sprog"></div>
+  <!-- S1 -->
+  <div class="s-step active" id="s1">
+    <div class="s-logo">Protocolo 30 Dias</div>
+    <div class="s-title">Modo<br>Fisiculturista</div>
+    <div class="s-sub">Configuração rápida. Feita uma vez — o app lembra de tudo sempre.</div>
+    <div class="s-field"><label class="s-lbl">Seu nome</label><input class="s-in" id="f-name" placeholder="Como quer ser chamado?" maxlength="30" autocomplete="off"></div>
+    <div class="s-grid">
+      <div class="s-field"><label class="s-lbl">Idade</label><input class="s-in" id="f-age" type="number" placeholder="28" min="16" max="80" inputmode="numeric"></div>
+      <div class="s-field"><label class="s-lbl">Sexo biológico</label><select class="s-sel" id="f-sex"><option value="M">Masculino</option><option value="F">Feminino</option></select></div>
+    </div>
+    <button class="s-btn" onclick="sNext(1)">Continuar →</button>
+  </div>
+  <!-- S2 -->
+  <div class="s-step" id="s2">
+    <div class="s-logo">Protocolo 30 Dias</div>
+    <div class="s-title">Seu<br>corpo</div>
+    <div class="s-sub">Calculamos suas calorias e macros exatos. Só você vê esses dados.</div>
+    <div class="s-grid">
+      <div class="s-field"><label class="s-lbl">Peso atual (kg)</label><input class="s-in" id="f-weight" type="number" placeholder="90" step="0.1" inputmode="decimal"></div>
+      <div class="s-field"><label class="s-lbl">Altura (cm)</label><input class="s-in" id="f-height" type="number" placeholder="175" min="140" max="220" inputmode="numeric"></div>
+    </div>
+    <div class="s-field"><label class="s-lbl">Nível de atividade (fora do treino)</label>
+      <select class="s-sel" id="f-activity">
+        <option value="1.2">Sedentário — trabalho sentado</option>
+        <option value="1.375" selected>Levemente ativo — ando bastante</option>
+        <option value="1.55">Moderadamente ativo</option>
+      </select>
+    </div>
+    <button class="s-btn" onclick="sNext(2)">Continuar →</button>
+    <div class="s-back" onclick="sBack(2)">← Voltar</div>
+  </div>
+  <!-- S3 -->
+  <div class="s-step" id="s3">
+    <div class="s-logo">Protocolo 30 Dias</div>
+    <div class="s-title">Seu<br>objetivo</div>
+    <div class="s-sub">Define seu déficit calórico e intensidade do protocolo.</div>
+    <div class="s-grid" id="gopts">
+      <div class="s-opt on" data-g="fat" onclick="selG(this)"><div class="s-opt-t">Perder<br>Gordura</div><div class="s-opt-s">−500 kcal/dia</div></div>
+      <div class="s-opt" data-g="recomp" onclick="selG(this)"><div class="s-opt-t">Recompo<br>sição</div><div class="s-opt-s">−200 kcal/dia</div></div>
+      <div class="s-opt" data-g="muscle" onclick="selG(this)"><div class="s-opt-t">Ganhar<br>Massa</div><div class="s-opt-s">+300 kcal/dia</div></div>
+      <div class="s-opt" data-g="health" onclick="selG(this)"><div class="s-opt-t">Saúde &<br>Energia</div><div class="s-opt-s">Manutenção</div></div>
+    </div>
+    <button class="s-btn" style="margin-top:20px;" onclick="sNext(3)">Continuar →</button>
+    <div class="s-back" onclick="sBack(3)">← Voltar</div>
+  </div>
+  <!-- S4 -->
+  <div class="s-step" id="s4">
+    <div class="s-logo">Protocolo 30 Dias</div>
+    <div class="s-title">Quase<br>pronto</div>
+    <div class="s-sub">Data de início e, opcionalmente, sua chave de API para o Coach de IA.</div>
+    <div class="s-field"><label class="s-lbl">Data de início do desafio</label><input class="s-in" id="f-start" type="date"></div>
+    <div class="s-field">
+      <label class="s-lbl">Chave API Claude (opcional — Coach de IA)</label>
+      <input class="s-in" id="f-api" placeholder="sk-ant-..." type="password" autocomplete="off">
+      <div style="font-size:11px;color:var(--text3);margin-top:4px;">Fica salva só no seu celular. Obtenha em console.anthropic.com</div>
+    </div>
+    <button class="s-btn" onclick="finishSetup()">Começar o protocolo →</button>
+    <div class="s-back" onclick="sBack(4)">← Voltar</div>
+  </div>
+</div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="hdr">
+    <div class="hdr-row">
+      <div class="hdr-l">
+        <div class="ey" id="h-date">—</div>
+        <div class="ht" id="h-name">Protocolo 30D</div>
+        <div class="hs" id="h-stats">—</div>
+      </div>
+      <div class="hdr-r">
+        <div class="daybox"><div class="dayn" id="h-day">1</div><div class="dayl">dia</div></div>
+        <div class="icon-btn" onclick="toggleTheme()" id="theme-btn">🌙</div>
+        <div class="icon-btn" onclick="openS()">⚙️</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- HOME -->
+    <div class="sec active" id="sec-home">
+      <div class="sg" id="macro-stats"></div>
+      <div style="padding:8px 14px 0;">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px;">Calendário 30 dias — toque pra marcar</div>
+        <div class="mgr" id="mgrid"></div>
+        <div style="display:flex;gap:12px;margin-top:6px;font-size:10px;color:var(--text3);">
+          <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:var(--gl);border:1px solid var(--gm);vertical-align:middle;margin-right:3px;"></span>Concluído</span>
+          <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:var(--al);border:1px solid var(--am);vertical-align:middle;margin-right:3px;"></span>Hoje</span>
+          <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:var(--bg2);border:1px solid var(--border);vertical-align:middle;margin-right:3px;"></span>Descanso</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ct">Projeção semana a semana</div>
+        <div id="wkbars"></div>
+      </div>
+      <div class="card">
+        <div class="ct">Log de peso</div>
+        <div style="display:flex;gap:7px;margin-bottom:10px;">
+          <input id="w-in" type="number" step="0.1" placeholder="Ex: 104.2" inputmode="decimal" style="flex:1;padding:9px 11px;border:1.5px solid var(--border2);border-radius:9px;font-size:15px;background:var(--bg2);color:var(--text);outline:none;-webkit-appearance:none;">
+          <button onclick="logW()" style="padding:9px 14px;background:var(--green);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;">Salvar</button>
+        </div>
+        <div id="wlog"></div>
+      </div>
+      <div class="card">
+        <div class="ct">Regras — não negocia</div>
+        <div class="row"><span class="rl">Pesagem</span><span class="rv">Toda segunda, manhã, jejum</span></div>
+        <div class="row"><span class="rl">Foto</span><span class="rv">Semana 1 e semana 4</span></div>
+        <div class="row"><span class="rl">Sono</span><span class="rv">7–8h. Celular fora às 22h30</span></div>
+        <div class="row"><span class="rl">Erro</span><span class="rv">1 dia ruim ≠ semana ruim</span></div>
+        <div class="row"><span class="rl">Refeição livre</span><span class="rv">Todo sábado após o treino <span class="badge ba">obrig.</span></span></div>
+      </div>
+      <div class="gap"></div>
+    </div>
+
+    <!-- TREINOS -->
+    <div class="sec" id="sec-treinos">
+      <div class="tsel">
+        <button class="tbtn active" onclick="showT('A',this)">Treino A</button>
+        <button class="tbtn" onclick="showT('B',this)">Treino B</button>
+        <button class="tbtn" onclick="showT('C',this)">Treino C</button>
+        <button class="tbtn" onclick="showT('dom',this)">Domingo</button>
+        <button class="tbtn" onclick="showT('div',this)">Divisão</button>
+      </div>
+      <div id="tcontent"></div>
+      <div class="gap"></div>
+    </div>
+
+    <!-- NUTRIÇÃO -->
+    <div class="sec" id="sec-nutri">
+      <div class="card"><div class="ct">Macros personalizados</div><div id="n-macros"></div></div>
+      <div class="card"><div class="ct">Plano alimentar diário</div><div id="n-meals"></div></div>
+      <div class="card card-g">
+        <div class="ct" style="color:var(--green);">Estratégia anti-fome</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:10px;">A fome nos primeiros 7 dias é real — o corpo ainda não ajustou. Use estas ferramentas antes de ceder:</div>
+        <div style="margin-bottom:10px;"><div style="font-size:12px;font-weight:600;color:var(--green);margin-bottom:3px;">1. Beba 500ml de água primeiro</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">80% da fome fora de hora é sede. Bebe, espera 10 min.</div></div>
+        <div style="border-top:1px solid var(--gm);padding-top:10px;margin-bottom:10px;"><div style="font-size:12px;font-weight:600;color:var(--green);margin-bottom:5px;">2. Come à vontade — volume alto, caloria baixa</div><div><span class="hp">Pepino</span><span class="hp">Alface</span><span class="hp">Tomate</span><span class="hp">Brócolis</span><span class="hp">Abobrinha</span><span class="hp">Cenoura crua</span><span class="hp">Gelatina zero</span><span class="hp">Caldo de frango</span></div></div>
+        <div style="border-top:1px solid var(--gm);padding-top:10px;margin-bottom:10px;"><div style="font-size:12px;font-weight:600;color:var(--green);margin-bottom:3px;">3. Fome após jantar</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Escova os dentes imediatamente. Chá sem açúcar. Dorme mais cedo.</div></div>
+        <div style="border-top:1px solid var(--gm);padding-top:10px;"><div style="font-size:12px;font-weight:600;color:var(--green);margin-bottom:3px;">4. Fome insuportável?</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">2 ovos cozidos ou 30g de whey. Proteína extra é muito melhor que ceder ao processado.</div></div>
+      </div>
+      <div class="fm">
+        <div class="fmt">Refeição livre — todo sábado</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.6;"><strong style="color:var(--amber);">1 refeição livre por semana, após o treino de sábado.</strong> Não é fraqueza — reseta o metabolismo e elimina a compulsão acumulada.<br><br>Come o que quiser nessa refeição · Só ela, não o dia · Curte sem culpa · Volta ao protocolo no jantar</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px 14px 0;">
+        <div class="card" style="margin:0;"><div class="ct" style="color:var(--green);font-size:12px;">✓ Come sempre</div><div style="font-size:12px;color:var(--text2);line-height:2.1;">Frango · Atum · Ovo · Whey · Arroz · Batata doce · Aveia · Azeite · Castanhas · Frutas · Legumes</div></div>
+        <div class="card" style="margin:0;"><div class="ct" style="color:var(--red);font-size:12px;">✗ Corta agora</div><div style="font-size:12px;color:var(--text2);line-height:2.1;">Pão · Massa · Açúcar · Fritura · Álcool · Refri · Suco caixinha · Ultra-processado</div></div>
+      </div>
+      <div class="gap"></div>
+    </div>
+
+    <!-- SUPLEMENTOS -->
+    <div class="sec" id="sec-supp">
+      <div class="card"><div class="ct">Básicos</div><div class="sg2" id="bsupps"></div></div>
+      <div class="card"><div class="ct" style="color:var(--green);">Manipulados — prioridade máxima</div><div style="font-size:12px;color:var(--text2);margin-bottom:10px;">Pede em farmácia de manipulação com esses nomes exatos. Peça todos juntos — fica barato.</div><div class="sg2" id="msupps"></div></div>
+      <div class="card card-a">
+        <div class="ct" style="color:var(--amber);">Exame de sangue — essa semana</div>
+        <div style="font-size:13px;color:var(--text);margin-bottom:8px;">Endocrinologista ou clínica de check-up:</div>
+        <div class="row"><span class="rl">Testosterona</span><span class="rv">Total e livre</span></div>
+        <div class="row"><span class="rl">Cortisol</span><span class="rv">Matinal (8h)</span></div>
+        <div class="row"><span class="rl">Tireoide</span><span class="rv">TSH + T4 livre</span></div>
+        <div class="row"><span class="rl">Vitamina D</span><span class="rv">25-OH vitamina D</span></div>
+        <div class="row"><span class="rl">Zinco sérico</span><span class="rv">+ ferro e ferritina</span></div>
+        <div class="row"><span class="rl">Hemograma</span><span class="rv">Completo</span></div>
+      </div>
+      <div class="gap"></div>
+    </div>
+
+    <!-- DIA -->
+    <div class="sec" id="sec-dia">
+      <div class="card">
+        <div class="ct">Checklist do dia</div>
+        <div id="chklist"></div>
+        <div style="margin-top:10px;">
+          <div class="prow"><span id="chk-cnt">0/10</span><span id="chk-pct">0%</span></div>
+          <div class="pbl"><div class="pbf" id="chk-bar" style="width:0%;"></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ct">Rotina — dias de treino</div>
+        <div class="tl">
+          <div class="tli"><div class="tld"></div><div class="tlt">07h00</div><div class="tlx">Acorda. 500ml de água imediato.</div><div class="tlb">Sem celular por 20 min.</div></div>
+          <div class="tli"><div class="tld"></div><div class="tlt">07h20</div><div class="tlx">Café da manhã proteico.</div><div class="tlb">3 ovos + aveia ou whey + aveia.</div></div>
+          <div class="tli"><div class="tld"></div><div class="tlt">07h50</div><div class="tlx">Cafeína pré-treino.</div><div class="tlb">Café forte ou 200mg cápsula. Espera 30 min.</div></div>
+          <div class="tli"><div class="tld"></div><div class="tlt">08h20</div><div class="tlx">Treino — 45 a 55 min.</div><div class="tlb">Fone, foco total. 45s de descanso máximo.</div></div>
+          <div class="tli"><div class="tld"></div><div class="tlt">09h15</div><div class="tlx">Cardio — 20 min zona 2.</div><div class="tlb">Esteira inclinada, bike ou elíptico.</div></div>
+          <div class="tli"><div class="tld"></div><div class="tlt">09h40</div><div class="tlx">Banho + whey pós-treino.</div><div class="tlb">30g whey. Pronto pro trabalho.</div></div>
+          <div class="tli"><div class="tld"></div><div class="tlt">10h00</div><div class="tlx">Trabalho.</div></div>
+          <div class="tli"><div class="tld"></div><div class="tlt">13h00</div><div class="tlx">Almoço completo.</div><div class="tlb">Sem tela por 20 min.</div></div>
+          <div class="tli"><div class="tld"></div><div class="tlt">16h30</div><div class="tlx">Lanche — whey ou ovos.</div></div>
+          <div class="tli"><div class="tld"></div><div class="tlt">20h00</div><div class="tlx">Jantar leve.</div><div class="tlb">Proteína + legumes. Escova os dentes logo depois.</div></div>
+          <div class="tli"><div class="tld"></div><div class="tlt">21h30</div><div class="tlx">Manipulados noturnos.</div><div class="tlb">Ashwagandha + magnésio + zinco.</div></div>
+          <div class="tli"><div class="tld"></div><div class="tlt">22h30</div><div class="tlx">Tela desliga. Dorme.</div><div class="tlb">Celular fora do quarto. 7–8h de sono é parte do protocolo.</div></div>
+        </div>
+      </div>
+      <div class="gap"></div>
+    </div>
+
+    <!-- COACH -->
+    <div class="sec" id="sec-coach">
+      <div class="chat-wrap" id="chat-wrap">
+        <div class="qbtns" id="qbtns">
+          <button class="qb" onclick="qsend('Tô com muita fome, o que faço?')">Tô com fome</button>
+          <button class="qb" onclick="qsend('Não tô com vontade de treinar hoje')">Sem vontade</button>
+          <button class="qb" onclick="qsend('Academia pequena, como adapto o treino?')">Academia pequena</button>
+          <button class="qb" onclick="qsend('O que como saindo pra jantar?')">Saindo pra jantar</button>
+          <button class="qb" onclick="qsend('Comi errado, o que faço agora?')">Comi errado</button>
+        </div>
+        <div class="msgs" id="msgs"></div>
+        <div class="chat-ft" id="chat-ft">
+          <textarea class="chin" id="chin" placeholder="Fala com seu coach..." rows="1" onkeydown="cEnter(event)"></textarea>
+          <button class="csend" id="csend" onclick="sendMsg()">↑</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GYMRATS + MOTIVAÇÃO -->
+    <div class="sec" id="sec-gym">
+      <div class="card">
+        <div class="ct">Configurar — GymRats</div>
+        <div class="grs"><div class="grn">1</div><div class="grt">Abre o GymRats → <strong>Create Challenge</strong></div></div>
+        <div class="grs"><div class="grn">2</div><div class="grt">Nome: <strong>Modo Fisiculturista 30D</strong></div></div>
+        <div class="grs"><div class="grn">3</div><div class="grt">Início: <strong>30 mar · Fim: 28 abr</strong></div></div>
+        <div class="grs"><div class="grn">4</div><div class="grt">Scoring: <strong>Most Workouts</strong></div></div>
+        <div class="grs"><div class="grn">5</div><div class="grt">Convida os amigos e manda o link do app</div></div>
+        <div class="grbox"><div class="grbl">Regra</div><div class="grbv">Registra treino + foto todo dia</div><div class="grbs">Domingo = descanso, não conta contra ninguém</div></div>
+      </div>
+      <div class="card card-a">
+        <div class="ct" style="color:var(--amber);">Mensagem pra mandar agora</div>
+        <div style="font-size:13px;line-height:1.7;background:var(--bg);border-radius:8px;padding:11px;font-style:italic;color:var(--text2);">"Vou começar um protocolo de 30 dias pesado na segunda. Quero montar um grupo no GymRats pra se cobrar junto. 6× por semana, treino + cardio todo dia. App personalizado com coach de IA. Quem tiver dentro me chama."</div>
+      </div>
+      <div class="mot"><div class="mot-t">A regra dos 5 minutos</div><div class="mot-b">Não precisa querer treinar. Só precisa chegar. Coloca o tênis e vai. Treina 5 minutos. Se quiser ir embora — pode, sem culpa. Em 95% das vezes você vai terminar o treino inteiro.</div></div>
+      <div class="mot"><div class="mot-t">A balança mente na semana 1</div><div class="mot-b">O peso pode subir por retenção hídrica. Normal e temporário. Olha pro espelho, pra como a roupa tá ficando. Esses são os números reais. Pesa só toda segunda de manhã em jejum.</div></div>
+      <div class="mot"><div class="mot-t">Um dia ruim não é semana ruim</div><div class="mot-b">Comeu errado? Não treinou? Tudo bem. Volta amanhã. O erro não é errar — é transformar 1 dia ruim em semana de abandono. Simplesmente volta.</div></div>
+      <div class="mot"><div class="mot-t">Entre o dia 10 e 14</div><div class="mot-b">Vai ter uma semana que você vai querer largar tudo. A animação passou e o resultado ainda não chegou. Esse é o momento que separa quem transforma de quem sempre recomeça. Aguentar essa semana é o protocolo.</div></div>
+      <div class="mot"><div class="mot-t">O treino não é punição</div><div class="mot-b">Você começou isso porque estava cansado de se sentir fora de controle. O treino clareia a cabeça, sobe a testosterona, baixa o cortisol e devolve a sensação de ser o autor da sua vida. Cada treino feito é uma prova de que você é capaz.</div></div>
+      <div class="gap"></div>
+    </div>
+
+  </div>
+
+  <div class="tabbar">
+    <button class="tab active" onclick="showSec('home',this)"><div class="ti">⚡</div>Início</button>
+    <button class="tab" onclick="showSec('treinos',this)"><div class="ti">💪</div>Treinos</button>
+    <button class="tab" onclick="showSec('nutri',this)"><div class="ti">🥩</div>Nutrição</button>
+    <button class="tab" onclick="showSec('supp',this)"><div class="ti">💊</div>Suplementos</button>
+    <button class="tab" onclick="showSec('dia',this)"><div class="ti">✅</div>Dia</button>
+    <button class="tab" onclick="showSec('coach',this)"><div class="ti">🤖</div>Coach</button>
+    <button class="tab" onclick="showSec('gym',this)"><div class="ti">🏆</div>GymRats</button>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div id="smodal">
+  <div class="ssheet">
+    <div class="sstitle">Configurações</div>
+    <div class="ssrow"><span class="sslbl">Modo escuro</span><div class="tog" id="dtog" onclick="toggleTheme()"></div></div>
+    <div class="ssrow"><span class="sslbl">Nome</span><span class="ssval" id="ss-n">—</span></div>
+    <div class="ssrow"><span class="sslbl">Peso inicial</span><span class="ssval" id="ss-w">—</span></div>
+    <div class="ssrow"><span class="sslbl">Objetivo</span><span class="ssval" id="ss-g">—</span></div>
+    <div style="padding:12px 0 6px;">
+      <div style="font-size:11px;font-weight:500;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em;">Chave API Claude</div>
+      <input class="ssin" id="ss-api" type="password" placeholder="sk-ant-..." autocomplete="off">
+      <div style="font-size:11px;color:var(--text3);margin-top:3px;">Salva apenas neste dispositivo</div>
+    </div>
+    <button class="ssbtn ssbtn-g" onclick="saveS()">Salvar</button>
+    <button class="ssbtn" style="background:var(--bg2);color:var(--text2);margin-top:4px;" onclick="closeS()">Fechar</button>
+    <button class="ssbtn ssbtn-r" onclick="resetApp()">Resetar tudo e recomeçar</button>
+  </div>
+</div>
+
+<script>
+// ─── STORAGE (multi-layer para máxima persistência no iOS) ─────────────────
+const PKEY = 'p30v3_profile';
+
+function save(key, val) {
+  const str = JSON.stringify(val);
+  try { localStorage.setItem(key, str); } catch(e){}
+  try { sessionStorage.setItem(key, str); } catch(e){}
+  // Cookie fallback (30 days)
+  try {
+    const d = new Date(); d.setTime(d.getTime() + 30*24*60*60*1000);
+    if(str.length < 3000) document.cookie = key+'='+encodeURIComponent(str)+';expires='+d.toUTCString()+';path=/;SameSite=Lax';
+  } catch(e){}
+}
+
+function load(key) {
+  try { const v = localStorage.getItem(key); if(v) return JSON.parse(v); } catch(e){}
+  try { const v = sessionStorage.getItem(key); if(v) return JSON.parse(v); } catch(e){}
+  try {
+    const c = document.cookie.split(';').find(x=>x.trim().startsWith(key+'='));
+    if(c) return JSON.parse(decodeURIComponent(c.split('=').slice(1).join('=')));
+  } catch(e){}
+  return null;
+}
+
+// ─── DATA ──────────────────────────────────────────────────────────────────
+const GOAL_LABELS = {fat:'Perder gordura',recomp:'Recomposição',muscle:'Ganhar massa',health:'Saúde & energia'};
+const GOAL_ADJ = {fat:-500,recomp:-200,muscle:300,health:0};
+
+const WORKOUTS = {
+  A:{name:'Treino A',muscles:'Peito + Tríceps',days:'Seg e Qui',duration:'45–55 min',exs:[{n:'Supino reto barra',s:'4 × 10'},{n:'Supino inclinado haltere',s:'4 × 10'},{n:'Crossover cabo ou fly',s:'3 × 12'},{n:'Tríceps pulley corda',s:'4 × 12'},{n:'Tríceps francês haltere',s:'3 × 12'},{n:'Mergulho banco',s:'3 × falha'}],cardio:{n:'Esteira inclinada 5%',d:'20 min',note:'Zona 2: ritmo que cansa mas dá pra falar. Caminha rápido inclinado.'}},
+  B:{name:'Treino B',muscles:'Costas + Bíceps',days:'Ter e Sex',duration:'45–55 min',exs:[{n:'Puxada frontal aberta',s:'4 × 10'},{n:'Remada curvada barra',s:'4 × 10'},{n:'Remada unilateral haltere',s:'3 × 12'},{n:'Rosca direta barra',s:'4 × 12'},{n:'Rosca martelo alternada',s:'3 × 12'},{n:'Rosca concentrada',s:'2 × 15'}],cardio:{n:'Bike ou elíptico',d:'20 min',note:'Ritmo constante, zona 2.'}},
+  C:{name:'Treino C',muscles:'Perna + Ombro',days:'Qua e Sáb',duration:'50–60 min',exs:[{n:'Agachamento livre',s:'4 × 10'},{n:'Leg press 45°',s:'4 × 12'},{n:'Cadeira extensora',s:'3 × 15'},{n:'Cadeira flexora',s:'3 × 15'},{n:'Desenvolvimento haltere',s:'4 × 10'},{n:'Elevação lateral cabo',s:'4 × 12'},{n:'Elevação frontal alternada',s:'3 × 12'}],cardio:{n:'Caminhada rápida ou elíptico',d:'20 min',note:''}}
+};
+
+const BSUPPS = [
+  {n:'Whey protein',d:'30g · 2× ao dia',w:'Café da manhã e pós-treino. Base da ingestão proteica.'},
+  {n:'Creatina mono',d:'5g · todo dia',w:'Mesmo sem treinar. Força, volume e recuperação.'},
+  {n:'Cafeína',d:'200mg · 30 min antes',w:'Café forte resolve. Ou cápsula 200mg manipulada.'},
+  {n:'Ômega-3',d:'2g · com almoço',w:'Anti-inflamatório, cortisol e saúde cardíaca.'},
+];
+const MSUPPS = [
+  {n:'Ashwagandha KSM-66',d:'600mg · à noite',w:'Extrato KSM-66. Reduz cortisol, sobe testosterona, melhora sono. Prioridade máxima.'},
+  {n:'Magnésio Bisglicinato',d:'400mg · à noite',w:'Não pede óxido. Sono profundo, recuperação muscular e reduz ansiedade.'},
+  {n:'Zinco Bisglicinato',d:'30mg · com jantar',w:'Quelato. Nunca em jejum. Testosterona, imunidade e recuperação.'},
+  {n:'D3 + K2 MK-7',d:'5.000 UI + 100 mcg',w:'Juntos, com refeição gordurosa. Testosterona, humor e imunidade.'},
+];
+const CHECKS = [
+  {t:'Acordou às 7h',s:'07h00 — sem celular por 20 min'},
+  {t:'Bebeu 500ml de água ao acordar',s:'07h00 — antes de qualquer coisa'},
+  {t:'Café da manhã proteico',s:'3 ovos + aveia ou whey + aveia'},
+  {t:'Treinou — musculação 45–55 min',s:'45s de descanso máximo entre séries'},
+  {t:'Cardio de 20 min',s:'Esteira, bike ou elíptico'},
+  {t:'Whey pós-treino',s:'30g com água'},
+  {t:'Proteína nas 3 refeições principais',s:'Frango, atum, ovo ou whey'},
+  {t:'Bebeu 4 litros de água',s:'Garrafa do lado o dia todo'},
+  {t:'Última refeição antes das 20h',s:'Escova os dentes logo depois'},
+  {t:'Manipulados noturnos + celular fora às 22h30',s:'Ashwagandha + magnésio + zinco'},
+];
+
+// ─── STATE ─────────────────────────────────────────────────────────────────
+let P = null;
+let chatHistory = [];
+
+// ─── BOOT ──────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  const theme = load('p30v3_theme') || 'light';
+  applyTheme(theme);
+
+  P = load(PKEY);
+  if(P) {
+    document.getElementById('setup').style.display = 'none';
+    launchApp();
+  } else {
+    document.getElementById('setup').style.display = 'flex';
+    const d = new Date();
+    while(d.getDay() !== 1) d.setDate(d.getDate()+1);
+    document.getElementById('f-start').value = d.toISOString().split('T')[0];
+    renderProg(1);
+  }
+});
+
+// Save on every visibility change (iOS PWA quirk)
+document.addEventListener('visibilitychange', () => {
+  if(P) save(PKEY, P);
+});
+window.addEventListener('pagehide', () => {
+  if(P) save(PKEY, P);
+});
+
+// ─── SETUP ─────────────────────────────────────────────────────────────────
+let step = 1;
+function renderProg(s) {
+  const el = document.getElementById('sprog');
+  el.innerHTML = '';
+  for(let i=1;i<=4;i++){const d=document.createElement('div');d.className='s-dot'+(i<s?' on':'');el.appendChild(d);}
+}
+function sNext(s) {
+  if(s===1){
+    const n=document.getElementById('f-name').value.trim();
+    const a=parseInt(document.getElementById('f-age').value);
+    if(!n){alert('Coloca seu nome!');return;}
+    if(!a||a<16||a>80){alert('Coloca uma idade válida!');return;}
+  }
+  if(s===2){
+    const w=parseFloat(document.getElementById('f-weight').value);
+    const h=parseFloat(document.getElementById('f-height').value);
+    if(!w||w<40||w>250){alert('Coloca um peso válido!');return;}
+    if(!h||h<140||h>220){alert('Coloca uma altura válida!');return;}
+  }
+  document.getElementById('s'+s).classList.remove('active');
+  document.getElementById('s'+(s+1)).classList.add('active');
+  step=s+1; renderProg(step);
+}
+function sBack(s) {
+  document.getElementById('s'+s).classList.remove('active');
+  document.getElementById('s'+(s-1)).classList.add('active');
+  step=s-1; renderProg(step);
+}
+function selG(el) {
+  document.querySelectorAll('#gopts .s-opt').forEach(o=>o.classList.remove('on'));
+  el.classList.add('on');
+}
+function finishSetup() {
+  const start = document.getElementById('f-start').value;
+  if(!start){alert('Coloca a data de início!');return;}
+  P = {
+    name: document.getElementById('f-name').value.trim(),
+    age: parseInt(document.getElementById('f-age').value),
+    sex: document.getElementById('f-sex').value,
+    weight: parseFloat(document.getElementById('f-weight').value),
+    height: parseFloat(document.getElementById('f-height').value),
+    activity: parseFloat(document.getElementById('f-activity').value),
+    goal: document.querySelector('#gopts .s-opt.on')?.dataset.g||'fat',
+    startDate: start,
+    apiKey: document.getElementById('f-api').value.trim(),
+    created: Date.now()
+  };
+  save(PKEY, P);
+  document.getElementById('setup').style.display='none';
+  launchApp();
+}
+
+// ─── APP LAUNCH ─────────────────────────────────────────────────────────────
+function launchApp() {
+  document.getElementById('app').classList.add('show');
+  const m = macros(P);
+  renderHeader(m);
+  renderMacroStats(m);
+  renderNutri(m);
+  renderMgrid();
+  renderWkBars();
+  renderWlog();
+  renderSupps();
+  renderChecklist();
+  renderTrain('A');
+  initCoach();
+  genTouchIcon();
+}
+
+// ─── MACROS ─────────────────────────────────────────────────────────────────
+function macros(p) {
+  const bmr = p.sex==='M'
+    ? 10*p.weight+6.25*p.height-5*p.age+5
+    : 10*p.weight+6.25*p.height-5*p.age-161;
+  const tdee = Math.round(bmr*p.activity);
+  const adj = GOAL_ADJ[p.goal]||(-500);
+  const cal = Math.max(1500, tdee+adj);
+  const prot = Math.round(p.weight*2.2);
+  const fat = Math.round(p.weight*1.0);
+  const carbs = Math.max(50, Math.round((cal-prot*4-fat*9)/4));
+  return {cal,prot,fat,carbs,tdee,bmr:Math.round(bmr)};
+}
+
+// ─── HEADER ─────────────────────────────────────────────────────────────────
+function renderHeader(m) {
+  const days=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  const months=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  const now=new Date();
+  document.getElementById('h-date').textContent=days[now.getDay()]+', '+now.getDate()+' '+months[now.getMonth()];
+  document.getElementById('h-name').textContent=P.name+' — 30D';
+  document.getElementById('h-stats').textContent=m.cal+'kcal · '+m.prot+'g prot · '+P.weight+'kg';
+  const start=new Date(P.startDate+'T00:00:00');
+  const today=new Date(); today.setHours(0,0,0,0);
+  const diff=Math.floor((today-start)/86400000)+1;
+  document.getElementById('h-day').textContent=Math.max(1,Math.min(30,diff));
+}
+
+function renderMacroStats(m) {
+  document.getElementById('macro-stats').innerHTML=[
+    {l:'Calorias',v:m.cal,u:'kcal'},{l:'Proteína',v:m.prot,u:'g'},
+    {l:'Água',v:4,u:'litros'},{l:'Treinos',v:6,u:'×/sem'}
+  ].map(i=>`<div class="sc"><div class="sl">${i.l}</div><div class="sv">${i.v} <span class="su">${i.u}</span></div></div>`).join('');
+}
+
+// ─── NUTRI ──────────────────────────────────────────────────────────────────
+function renderNutri(m) {
+  const gl=GOAL_LABELS[P.goal]||'Perder gordura';
+  const ga=GOAL_ADJ[P.goal];
+  document.getElementById('n-macros').innerHTML=`
+    <div class="row"><span class="rl">Objetivo</span><span class="rv">${gl} <span class="badge ba">${ga>0?'+':''}${ga} kcal</span></span></div>
+    <div class="row"><span class="rl">TDEE estimado</span><span class="rv">${m.tdee} kcal/dia</span></div>
+    <div class="row"><span class="rl">Seu alvo diário</span><span class="rv"><strong>${m.cal} kcal</strong> <span class="badge bb">personalizado</span></span></div>
+    <div class="row"><span class="rl">Proteína</span><span class="rv">${m.prot}g · ${m.prot*4} kcal <span class="badge bg">prioridade</span></span></div>
+    <div class="row"><span class="rl">Carboidrato</span><span class="rv">${m.carbs}g · ${m.carbs*4} kcal</span></div>
+    <div class="row"><span class="rl">Gordura</span><span class="rv">${m.fat}g · ${m.fat*9} kcal</span></div>
+    <div class="row"><span class="rl">Água</span><span class="rv">4 litros/dia <span class="badge bg">inegociável</span></span></div>`;
+  const p1=Math.round(m.prot/3);
+  document.getElementById('n-meals').innerHTML=`
+    <div class="row"><span class="rl">07h20 — Café</span><span class="rv">3 ovos + aveia 60g + fruta</span></div>
+    <div class="row"><span class="rl">10h00 — Lanche</span><span class="rv">Whey 30g + 1 fruta</span></div>
+    <div class="row"><span class="rl">13h00 — Almoço</span><span class="rv">${p1*2}g frango + arroz + salada</span></div>
+    <div class="row"><span class="rl">16h30 — Pré-treino</span><span class="rv">Whey 30g + batata doce 80g</span></div>
+    <div class="row"><span class="rl">20h00 — Jantar</span><span class="rv">${p1}g atum/frango + legumes</span></div>
+    <div style="font-size:11px;color:var(--text3);margin-top:7px;">Calculado para ${P.weight}kg. Proteína total alvo: ${m.prot}g/dia.</div>`;
+}
+
+// ─── MONTH GRID ──────────────────────────────────────────────────────────────
+function renderMgrid() {
+  const saved=load('p30v3_days')||{};
+  const mg=document.getElementById('mgrid'); mg.innerHTML='';
+  const start=new Date(P.startDate+'T00:00:00');
+  const today=new Date(); today.setHours(0,0,0,0);
+  for(let i=0;i<30;i++){
+    const d=new Date(start); d.setDate(d.getDate()+i);
+    const isR=d.getDay()===0, isT=d.toDateString()===today.toDateString(), isF=d>today, isDone=saved[i];
+    const div=document.createElement('div');
+    let cls='md';
+    if(isR)cls+=' rest'; else if(isDone)cls+=' done'; else if(isT)cls+=' today'; else if(isF)cls+=' fut';
+    div.className=cls; div.textContent=isR?'off':d.getDate();
+    if(!isR&&!isF){div.onclick=()=>{saved[i]=!saved[i];save('p30v3_days',saved);div.className='md'+(saved[i]?' done':(isT?' today':''));};} 
+    mg.appendChild(div);
+  }
+}
+
+// ─── WEEK BARS ───────────────────────────────────────────────────────────────
+function renderWkBars() {
+  document.getElementById('wkbars').innerHTML=[
+    {l:'Semana 1 — adaptação',r:'−1 a 2kg',p:25},
+    {l:'Semana 2 — ritmo entra',r:'−2 a 3kg acum.',p:50},
+    {l:'Semana 3 — aparece no espelho',r:'−4 a 6kg acum.',p:75},
+    {l:'Semana 4 — transformação real',r:'−6 a 10kg acum.',p:100},
+  ].map(w=>`<div style="margin-bottom:10px;"><div class="prog-lbl"><span>${w.l}</span><span>${w.r}</span></div><div class="prog-bar"><div class="prog-fill" style="width:${w.p}%;"></div></div></div>`).join('');
+}
+
+// ─── WEIGHT LOG ──────────────────────────────────────────────────────────────
+function logW() {
+  const v=parseFloat(document.getElementById('w-in').value);
+  if(!v||v<30||v>300){alert('Peso inválido');return;}
+  const log=load('p30v3_wlog')||[];
+  log.unshift({date:new Date().toLocaleDateString('pt-BR'),w:v});
+  save('p30v3_wlog',log.slice(0,20));
+  document.getElementById('w-in').value='';
+  renderWlog();
+}
+function renderWlog() {
+  const log=load('p30v3_wlog')||[];
+  const el=document.getElementById('wlog');
+  if(!log.length){el.innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:10px;">Nenhum registro. Pesa-se toda segunda de manhã em jejum.</div>';return;}
+  el.innerHTML=log.map((e,i)=>{
+    const diff=i<log.length-1?(e.w-log[i+1].w).toFixed(1):null;
+    const dc=diff!==null?(parseFloat(diff)<0?'background:var(--gl);color:var(--green)':'background:var(--rl);color:var(--red)'):'background:var(--bg3);color:var(--text3)';
+    const dt=diff!==null?(parseFloat(diff)>0?'+':'')+diff+'kg':'base';
+    return `<div class="wlog"><span class="wld">${e.date}</span><span class="wlv">${e.w}kg <span class="diff" style="${dc}">${dt}</span></span></div>`;
+  }).join('');
+}
+
+// ─── SUPPLEMENTS ─────────────────────────────────────────────────────────────
+function renderSupps() {
+  document.getElementById('bsupps').innerHTML=BSUPPS.map(s=>`<div class="sc2"><div class="sn">${s.n}</div><div class="sd">${s.d}</div><div class="sw2">${s.w}</div></div>`).join('');
+  document.getElementById('msupps').innerHTML=MSUPPS.map(s=>`<div class="sc2 pri"><div class="sn">${s.n}</div><div class="sd">${s.d}</div><div class="sw2">${s.w}</div></div>`).join('');
+}
+
+// ─── CHECKLIST ───────────────────────────────────────────────────────────────
+function renderChecklist() {
+  const key='p30v3_chk_'+new Date().toDateString();
+  const saved=load(key)||{};
+  const el=document.getElementById('chklist'); el.innerHTML='';
+  CHECKS.forEach((c,i)=>{
+    const div=document.createElement('div'); div.className='chi';
+    div.innerHTML=`<div class="chb ${saved[i]?'on':''}" id="cb${i}"></div><div><div class="cht ${saved[i]?'done':''}">${c.t}</div><div class="chs">${c.s}</div></div>`;
+    div.onclick=()=>{saved[i]=!saved[i];save(key,saved);document.getElementById('cb'+i).className='chb '+(saved[i]?'on':'');div.querySelector('.cht').className='cht '+(saved[i]?'done':'');updBar(saved);};
+    el.appendChild(div);
+  });
+  updBar(saved);
+}
+function updBar(saved) {
+  const done=Object.values(saved).filter(Boolean).length;
+  const pct=Math.round(done/CHECKS.length*100);
+  document.getElementById('chk-cnt').textContent=done+'/'+CHECKS.length;
+  document.getElementById('chk-pct').textContent=pct+'%';
+  document.getElementById('chk-bar').style.width=pct+'%';
+}
+
+// ─── WORKOUTS ────────────────────────────────────────────────────────────────
+function renderTrain(key) {
+  const el=document.getElementById('tcontent');
+  if(key==='div'){
+    const rows=[['Segunda','A — Peito / Tríceps','var(--blue)'],['Terça','B — Costas / Bíceps','var(--green)'],['Quarta','C — Perna / Ombro','var(--amber)'],['Quinta','A — Peito / Tríceps','var(--blue)'],['Sexta','B — Costas / Bíceps','var(--green)'],['Sábado','C — Perna / Ombro','var(--amber)'],['Domingo','Descanso ativo','var(--text3)']];
+    el.innerHTML=`<div class="card"><div class="ct">Semana completa</div>${rows.map(r=>`<div class="row"><span class="rl">${r[0]}</span><span class="rv" style="color:${r[2]}">${r[1]}</span></div>`).join('')}</div>`;
+    return;
+  }
+  if(key==='dom'){
+    el.innerHTML=`<div class="th"><div class="tn2">Domingo</div><div class="td2">Descanso ativo — obrigatório</div></div><div class="card"><div class="ct">O que fazer</div><div style="font-size:13px;color:var(--text2);line-height:1.7;">40 min de caminhada ao ar livre. Sem academia, sem pressão. O músculo cresce no descanso, não no treino.<br><br>Leitura, podcast, ligar pra família. Qualquer coisa fora de trabalho. Esse dia é seu.</div></div>`;
+    return;
+  }
+  const w=WORKOUTS[key];
+  el.innerHTML=`<div class="th"><div class="tn2">${w.name}</div><div class="td2">${w.muscles}</div><div class="tm"><div class="tmi">${w.duration}</div><div class="tmi">45s descanso máx</div><div class="tmi">${w.days}</div></div></div><div class="card"><div class="ct">Musculação</div>${w.exs.map(e=>`<div class="ex"><span class="en">${e.n}</span><span class="es">${e.s}</span></div>`).join('')}</div><div class="card"><div class="ct">Cardio — logo após</div><div class="ex"><span class="en ec">${w.cardio.n}</span><span class="es">${w.cardio.d}</span></div>${w.cardio.note?`<div style="font-size:12px;color:var(--text3);margin-top:7px;">${w.cardio.note}</div>`:''}</div>`;
+}
+function showT(id,btn) {
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTrain(id);
+}
+
+// ─── NAVIGATION ──────────────────────────────────────────────────────────────
+function showSec(id,btn) {
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  btn.classList.add('active');
+  document.querySelector('.content').scrollTop=0;
+}
+
+// ─── THEME ───────────────────────────────────────────────────────────────────
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme',t);
+  const btn=document.getElementById('theme-btn');
+  const tog=document.getElementById('dtog');
+  if(btn) btn.textContent=t==='dark'?'☀️':'🌙';
+  if(tog) tog.className='tog'+(t==='dark'?' on':'');
+}
+function toggleTheme() {
+  const cur=document.documentElement.getAttribute('data-theme')||'light';
+  const next=cur==='dark'?'light':'dark';
+  save('p30v3_theme',next);
+  applyTheme(next);
+}
+
+// ─── COACH ───────────────────────────────────────────────────────────────────
+function initCoach() {
+  const msgs=document.getElementById('msgs');
+  if(!P.apiKey) {
+    msgs.innerHTML=`<div class="no-key">Coach de IA não configurado.<br><br>Adicione sua chave API Claude em <a onclick="openS()">⚙️ Configurações</a>.<br><br>Crie uma em <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></div>`;
+    document.getElementById('chat-ft').style.display='none';
+    document.getElementById('qbtns').style.display='none';
+    return;
+  }
+  document.getElementById('chat-ft').style.display='flex';
+  document.getElementById('qbtns').style.display='flex';
+  const m=macros(P);
+  addMsg(`Olá, ${P.name}! Sou seu coach pessoal para o Protocolo 30 Dias.\n\nSeu plano: ${m.cal}kcal/dia, ${m.prot}g de proteína. Objetivo: ${GOAL_LABELS[P.goal]||'perder gordura'}.\n\nPode me perguntar qualquer coisa sobre treino, alimentação, suplementação ou motivação. Estou aqui para te manter no protocolo.`,'ai');
+}
+
+function addMsg(text,role) {
+  const el=document.getElementById('msgs');
+  const div=document.createElement('div');
+  div.className='msg '+role; div.textContent=text;
+  el.appendChild(div); el.scrollTop=el.scrollHeight;
+  return div;
+}
+function qsend(t){document.getElementById('chin').value=t;sendMsg();}
+function cEnter(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
+
+async function sendMsg() {
+  const inp=document.getElementById('chin');
+  const text=inp.value.trim();
+  if(!text||!P.apiKey) return;
+  inp.value=''; inp.style.height='auto';
+  document.getElementById('csend').disabled=true;
+  addMsg(text,'user');
+  chatHistory.push({role:'user',content:text});
+  const loading=addMsg('...','ai');
+  const m=macros(P);
+  const sys=`Você é o coach pessoal de alta performance de ${P.name}. Perfil: ${P.weight}kg, ${P.height}cm, ${P.age} anos, sexo ${P.sex==='M'?'masculino':'feminino'}. Macros: ${m.cal}kcal, ${m.prot}g proteína, ${m.carbs}g carbs, ${m.fat}g gordura. Objetivo: ${GOAL_LABELS[P.goal]||'perder gordura'}.
+
+Contexto crucial: Esta pessoa vive sob pressão financeira intensa enquanto constrói negócios. Está exausta, se sentindo fora de controle, e iniciou o Protocolo 30 Dias Modo Fisiculturista para recuperar condicionamento, performance e autoestima. Treina 6x/semana (ABC duplo), cardio diário, déficit calórico, usa manipulados para cortisol e testosterona.
+
+Seja: direto, pragmático, honesto e encorajador. Máximo 2-3 parágrafos. Sempre em português. Não seja condescendente. Soluções práticas e rápidas.`;
+  try {
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':P.apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,system:sys,messages:chatHistory})});
+    const data=await res.json();
+    if(data.error){loading.textContent='Erro: '+data.error.message;}
+    else{const r=data.content[0].text;loading.textContent=r;chatHistory.push({role:'assistant',content:r});if(chatHistory.length>16)chatHistory=chatHistory.slice(-16);}
+  } catch(e){loading.textContent='Erro de conexão. Verifique sua chave de API.';}
+  document.getElementById('csend').disabled=false;
+}
+
+// ─── SETTINGS ────────────────────────────────────────────────────────────────
+function openS() {
+  document.getElementById('smodal').classList.add('open');
+  if(P){document.getElementById('ss-n').textContent=P.name||'—';document.getElementById('ss-w').textContent=(P.weight||'—')+'kg';document.getElementById('ss-g').textContent=GOAL_LABELS[P.goal]||'—';document.getElementById('ss-api').value=P.apiKey||'';}
+  const t=load('p30v3_theme')||'light';
+  document.getElementById('dtog').className='tog'+(t==='dark'?' on':'');
+}
+function closeS(){document.getElementById('smodal').classList.remove('open');}
+function saveS(){
+  if(P){P.apiKey=document.getElementById('ss-api').value.trim();save(PKEY,P);}
+  closeS();
+  chatHistory=[];initCoach();
+}
+function resetApp(){if(!confirm('Isso apaga todo o seu progresso. Tem certeza?'))return;try{localStorage.clear();sessionStorage.clear();}catch(e){}document.cookie.split(';').forEach(c=>{try{document.cookie=c.trim().split('=')[0]+'=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';}catch(e){}});location.reload();}
+document.getElementById('smodal').addEventListener('click',function(e){if(e.target===this)closeS();});
+
+// ─── FAVICON ─────────────────────────────────────────────────────────────────
+function genTouchIcon(){
+  try{
+    const c=document.createElement('canvas');c.width=180;c.height=180;
+    const x=c.getContext('2d');
+    const r=38;x.beginPath();x.moveTo(r,0);x.lineTo(180-r,0);x.quadraticCurveTo(180,0,180,r);x.lineTo(180,180-r);x.quadraticCurveTo(180,180,180-r,180);x.lineTo(r,180);x.quadraticCurveTo(0,180,0,180-r);x.lineTo(0,r);x.quadraticCurveTo(0,0,r,0);x.closePath();
+    x.fillStyle='#1a7a3c';x.fill();
+    x.fillStyle='#fff';x.font='900 70px Arial Black,sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText('30',90,95);
+    document.getElementById('ati').href=c.toDataURL('image/png');
+  }catch(e){}
+}
+</script>
+</body>
+</html>
