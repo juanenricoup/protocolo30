@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Protocolo 30 Dias</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ffffff;
+  --bg2: #f7f7f5;
+  --bg3: #f0f0ec;
+  --bg4: #e8e8e4;
+  --green: #1a7a3c;
+  --green-light: #e8f5ee;
+  --green-mid: #c3e6d0;
+  --red: #c0392b;
+  --red-light: #fdf0ef;
+  --amber: #b45309;
+  --amber-light: #fef3c7;
+  --blue: #1d4ed8;
+  --blue-light: #eff6ff;
+  --text: #111111;
+  --text2: #555555;
+  --text3: #999999;
+  --border: #e5e5e0;
+  --border2: #d0d0c8;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; overflow: hidden; }
+body { display: flex; flex-direction: column; }
+
+.header { padding: 52px 20px 14px; background: var(--bg); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.header-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.header-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; color: var(--green); text-transform: uppercase; margin-bottom: 3px; }
+.header-title { font-family: 'Barlow Condensed', sans-serif; font-size: 26px; font-weight: 900; line-height: 1; color: var(--text); text-transform: uppercase; }
+.header-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
+.day-box { text-align: right; }
+.day-num { font-family: 'Barlow Condensed', sans-serif; font-size: 44px; font-weight: 900; line-height: 1; color: var(--green); }
+.day-lbl { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; }
+
+.content { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding-bottom: 80px; }
+
+.tabbar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg); border-top: 1px solid var(--border); display: flex; z-index: 100; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -1px 8px rgba(0,0,0,0.06); }
+.tab { flex: 1; padding: 9px 2px 7px; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; background: none; border: none; color: var(--text3); font-family: 'DM Sans', sans-serif; font-size: 9px; transition: color 0.15s; }
+.tab.active { color: var(--green); }
+.tab-icon { font-size: 18px; line-height: 1; }
+
+.section { display: none; padding: 0; }
+.section.active { display: block; }
+.section-pad { padding: 14px 0 0; }
+.gap { height: 14px; }
+
+.card { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 10px 14px 0; box-shadow: var(--shadow); }
+.card-title { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text); margin-bottom: 12px; }
+.card-green { border-color: var(--green-mid); background: var(--green-light); }
+.card-amber { border-color: #fcd34d; background: var(--amber-light); }
+.card-red { border-color: #fca5a5; background: var(--red-light); }
+.card-blue { border-color: #bfdbfe; background: var(--blue-light); }
+
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 14px 0; }
+.stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+.stat-lbl { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+.stat-val { font-family: 'Barlow Condensed', sans-serif; font-size: 26px; font-weight: 800; color: var(--green); line-height: 1; }
+.stat-unit { font-size: 12px; font-weight: 400; color: var(--text3); }
+
+.row-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; gap: 8px; }
+.row-item:last-child { border-bottom: none; }
+.row-lbl { color: var(--text2); flex-shrink: 0; }
+.row-val { font-weight: 500; color: var(--text); text-align: right; line-height: 1.3; }
+
+.badge { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 99px; font-weight: 500; }
+.badge-g { background: var(--green-light); color: var(--green); }
+.badge-a { background: var(--amber-light); color: var(--amber); }
+.badge-r { background: var(--red-light); color: var(--red); }
+.badge-b { background: var(--blue-light); color: var(--blue); }
+
+.ex-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); }
+.ex-item:last-child { border-bottom: none; }
+.ex-name { font-size: 14px; color: var(--text); }
+.ex-sets { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; color: var(--green); letter-spacing: 0.04em; }
+.ex-cardio { color: var(--text3); font-style: italic; font-size: 13px; }
+
+.train-selector { display: flex; gap: 6px; padding: 10px 14px 0; overflow-x: auto; }
+.train-selector::-webkit-scrollbar { display: none; }
+.train-btn { flex-shrink: 0; padding: 7px 14px; border-radius: 99px; border: 1px solid var(--border2); background: var(--bg2); color: var(--text2); font-size: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; white-space: nowrap; }
+.train-btn.active { background: var(--green); border-color: var(--green); color: #fff; font-weight: 500; }
+.train-block { display: none; }
+.train-block.active { display: block; }
+.train-header { padding: 12px 14px 0; }
+.train-name { font-family: 'Barlow Condensed', sans-serif; font-size: 30px; font-weight: 900; text-transform: uppercase; color: var(--text); }
+.train-desc { font-size: 12px; color: var(--text2); margin-top: 1px; }
+.train-meta { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.train-meta-item { font-size: 11px; color: var(--text2); background: var(--bg2); padding: 3px 10px; border-radius: 99px; border: 1px solid var(--border); }
+
+.check-item { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+.check-item:last-child { border-bottom: none; }
+.chk-box { width: 22px; height: 22px; border: 2px solid var(--border2); border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.chk-box.on { background: var(--green); border-color: var(--green); }
+.chk-box.on::after { content: ''; display: block; width: 5px; height: 9px; border: 2px solid #fff; border-top: none; border-left: none; transform: rotate(45deg) translateY(-1px); }
+.chk-text { font-size: 14px; color: var(--text); line-height: 1.3; }
+.chk-text.done { color: var(--text3); text-decoration: line-through; }
+.chk-sub { font-size: 11px; color: var(--text3); margin-top: 1px; }
+
+.prog-bar { height: 5px; background: var(--bg3); border-radius: 99px; overflow: hidden; margin-top: 6px; }
+.prog-fill { height: 100%; background: var(--green); border-radius: 99px; transition: width 0.4s; }
+.prog-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text3); margin-top: 3px; }
+
+.tl { padding-left: 22px; position: relative; }
+.tl::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 1px; background: var(--border2); }
+.tl-item { position: relative; margin-bottom: 14px; }
+.tl-dot { position: absolute; left: -22px; top: 4px; width: 13px; height: 13px; border-radius: 50%; background: var(--bg); border: 2px solid var(--border2); }
+.tl-time { font-size: 11px; color: var(--green); font-family: 'Barlow Condensed', sans-serif; font-weight: 700; letter-spacing: 0.08em; }
+.tl-text { font-size: 14px; color: var(--text); margin-top: 1px; }
+.tl-sub { font-size: 12px; color: var(--text3); margin-top: 2px; line-height: 1.4; }
+
+.supp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.supp-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+.supp-name { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 800; text-transform: uppercase; color: var(--text); margin-bottom: 3px; }
+.supp-dose { font-size: 12px; color: var(--green); font-weight: 500; margin-bottom: 4px; }
+.supp-why { font-size: 11px; color: var(--text2); line-height: 1.4; }
+.supp-priority { border-color: var(--green-mid); background: var(--green-light); }
+.supp-priority .supp-name { color: var(--green); }
+
+.month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+.mday { aspect-ratio: 1; border-radius: 7px; background: var(--bg2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--text3); cursor: pointer; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; transition: all 0.15s; }
+.mday.done { background: var(--green-light); border-color: var(--green-mid); color: var(--green); }
+.mday.rest-day { background: var(--bg); color: var(--border2); cursor: default; font-size: 9px; }
+.mday.future { opacity: 0.35; cursor: default; }
+.mday.today-mark { border-color: var(--amber); color: var(--amber); background: var(--amber-light); }
+
+.week-bar { margin-bottom: 12px; }
+.week-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--text2); margin-bottom: 4px; }
+.week-val { color: var(--text3); }
+
+.hunger-pill { display: inline-flex; align-items: center; gap: 6px; background: var(--green-light); border: 1px solid var(--green-mid); color: var(--green); font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 99px; margin: 3px 3px 3px 0; }
+
+.mot-card { border-left: 3px solid var(--green); background: var(--bg2); border-radius: 0 10px 10px 0; padding: 14px; margin: 10px 14px 0; }
+.mot-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 800; text-transform: uppercase; color: var(--green); margin-bottom: 6px; }
+.mot-text { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+.gr-step { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; }
+.gr-num { width: 26px; height: 26px; border-radius: 50%; background: var(--green); color: #fff; font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.gr-text { font-size: 13px; color: var(--text); line-height: 1.5; padding-top: 3px; }
+.gr-text strong { color: var(--green); }
+.gr-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 8px; }
+.gr-box-lbl { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+.gr-box-val { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: var(--green); }
+.gr-box-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+.free-meal-box { border: 2px solid var(--amber); border-radius: 12px; padding: 14px; background: var(--amber-light); margin: 10px 14px 0; }
+.fm-title { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 900; text-transform: uppercase; color: var(--amber); margin-bottom: 6px; }
+.fm-text { font-size: 13px; color: #78350f; line-height: 1.6; }
+
+::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="header-eyebrow" id="hdr-day">Protocolo ativo</div>
+      <div class="header-title">Modo<br>Fisiculturista</div>
+      <div class="header-sub">1,91m · 106,5kg · começa 30 mar</div>
+    </div>
+    <div class="day-box">
+      <div class="day-num" id="day-count">1</div>
+      <div class="day-lbl">dia</div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- HOME -->
+<div id="sec-home" class="section active section-pad">
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-lbl">Calorias/dia</div><div class="stat-val">2.200 <span class="stat-unit">kcal</span></div></div>
+    <div class="stat-card"><div class="stat-lbl">Proteína</div><div class="stat-val">200 <span class="stat-unit">g</span></div></div>
+    <div class="stat-card"><div class="stat-lbl">Água</div><div class="stat-val">4 <span class="stat-unit">litros</span></div></div>
+    <div class="stat-card"><div class="stat-lbl">Treinos</div><div class="stat-val">6 <span class="stat-unit">×/sem</span></div></div>
+  </div>
+
+  <div style="padding: 10px 14px 0;">
+    <div style="font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">Calendário — 30 dias</div>
+    <div class="month-grid" id="month-grid"></div>
+    <div style="display: flex; gap: 14px; margin-top: 8px; font-size: 11px; color: var(--text3);">
+      <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:3px;background:var(--green-light);border:1px solid var(--green-mid);display:inline-block;"></span> Concluído</span>
+      <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:3px;background:var(--amber-light);border:1px solid #fcd34d;display:inline-block;"></span> Hoje</span>
+      <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:3px;background:var(--bg2);border:1px solid var(--border);display:inline-block;"></span> Descanso</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Projeção semana a semana</div>
+    <div class="week-bar"><div class="week-label"><span>Sem 1 — adaptação</span><span class="week-val">−1 a 2kg</span></div><div class="prog-bar"><div class="prog-fill" style="width:25%;"></div></div></div>
+    <div class="week-bar"><div class="week-label"><span>Sem 2 — ritmo entra</span><span class="week-val">−2 a 3kg acum.</span></div><div class="prog-bar"><div class="prog-fill" style="width:50%;"></div></div></div>
+    <div class="week-bar"><div class="week-label"><span>Sem 3 — aparece no espelho</span><span class="week-val">−4 a 6kg acum.</span></div><div class="prog-bar"><div class="prog-fill" style="width:75%;"></div></div></div>
+    <div class="week-bar" style="margin-bottom:0;"><div class="week-label"><span>Sem 4 — transformação real</span><span class="week-val">−6 a 10kg acum.</span></div><div class="prog-bar"><div class="prog-fill" style="width:100%;"></div></div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Regras que não negociam</div>
+    <div class="row-item"><span class="row-lbl">Pesagem</span><span class="row-val">Toda segunda, manhã, jejum</span></div>
+    <div class="row-item"><span class="row-lbl">Foto</span><span class="row-val">Semana 1 e semana 4</span></div>
+    <div class="row-item"><span class="row-lbl">Sono</span><span class="row-val">7–8h. Celular fora às 22h30</span></div>
+    <div class="row-item"><span class="row-lbl">Erro</span><span class="row-val">1 dia ruim ≠ semana ruim</span></div>
+    <div class="row-item"><span class="row-lbl">Refeição livre</span><span class="row-val">1× por semana <span class="badge badge-a">sábado</span></span></div>
+  </div>
+  <div class="gap"></div>
+</div>
+
+<!-- TREINOS -->
+<div id="sec-treinos" class="section section-pad">
+  <div class="train-selector">
+    <button class="train-btn active" onclick="showTrain('A',this)">Treino A</button>
+    <button class="train-btn" onclick="showTrain('B',this)">Treino B</button>
+    <button class="train-btn" onclick="showTrain('C',this)">Treino C</button>
+    <button class="train-btn" onclick="showTrain('dom',this)">Domingo</button>
+    <button class="train-btn" onclick="showTrain('div',this)">Divisão</button>
+  </div>
+
+  <div id="train-A" class="train-block active">
+    <div class="train-header"><div class="train-name">Treino A</div><div class="train-desc">Peito + Tríceps</div><div class="train-meta"><div class="train-meta-item">45–55 min</div><div class="train-meta-item">45s descanso máx</div><div class="train-meta-item">Seg e Qui</div></div></div>
+    <div class="card"><div class="card-title">Musculação</div><div class="ex-item"><span class="ex-name">Supino reto barra</span><span class="ex-sets">4 × 10</span></div><div class="ex-item"><span class="ex-name">Supino inclinado haltere</span><span class="ex-sets">4 × 10</span></div><div class="ex-item"><span class="ex-name">Crossover cabo ou fly</span><span class="ex-sets">3 × 12</span></div><div class="ex-item"><span class="ex-name">Tríceps pulley corda</span><span class="ex-sets">4 × 12</span></div><div class="ex-item"><span class="ex-name">Tríceps francês haltere</span><span class="ex-sets">3 × 12</span></div><div class="ex-item"><span class="ex-name">Mergulho banco</span><span class="ex-sets">3 × falha</span></div></div>
+    <div class="card"><div class="card-title">Cardio — logo após</div><div class="ex-item"><span class="ex-name ex-cardio">Esteira inclinada 5%</span><span class="ex-sets">20 min</span></div><div style="font-size:12px;color:var(--text3);margin-top:8px;">Zona 2: ritmo que cansa mas dá pra falar. Não corre — caminha rápido inclinado.</div></div>
+  </div>
+
+  <div id="train-B" class="train-block">
+    <div class="train-header"><div class="train-name">Treino B</div><div class="train-desc">Costas + Bíceps</div><div class="train-meta"><div class="train-meta-item">45–55 min</div><div class="train-meta-item">45s descanso máx</div><div class="train-meta-item">Ter e Sex</div></div></div>
+    <div class="card"><div class="card-title">Musculação</div><div class="ex-item"><span class="ex-name">Puxada frontal aberta</span><span class="ex-sets">4 × 10</span></div><div class="ex-item"><span class="ex-name">Remada curvada barra</span><span class="ex-sets">4 × 10</span></div><div class="ex-item"><span class="ex-name">Remada unilateral haltere</span><span class="ex-sets">3 × 12</span></div><div class="ex-item"><span class="ex-name">Rosca direta barra</span><span class="ex-sets">4 × 12</span></div><div class="ex-item"><span class="ex-name">Rosca martelo alternada</span><span class="ex-sets">3 × 12</span></div><div class="ex-item"><span class="ex-name">Rosca concentrada</span><span class="ex-sets">2 × 15</span></div></div>
+    <div class="card"><div class="card-title">Cardio — logo após</div><div class="ex-item"><span class="ex-name ex-cardio">Bike ou elíptico</span><span class="ex-sets">20 min</span></div></div>
+  </div>
+
+  <div id="train-C" class="train-block">
+    <div class="train-header"><div class="train-name">Treino C</div><div class="train-desc">Perna + Ombro</div><div class="train-meta"><div class="train-meta-item">50–60 min</div><div class="train-meta-item">45s descanso máx</div><div class="train-meta-item">Qua e Sáb</div></div></div>
+    <div class="card"><div class="card-title">Musculação</div><div class="ex-item"><span class="ex-name">Agachamento livre</span><span class="ex-sets">4 × 10</span></div><div class="ex-item"><span class="ex-name">Leg press 45°</span><span class="ex-sets">4 × 12</span></div><div class="ex-item"><span class="ex-name">Cadeira extensora</span><span class="ex-sets">3 × 15</span></div><div class="ex-item"><span class="ex-name">Cadeira flexora</span><span class="ex-sets">3 × 15</span></div><div class="ex-item"><span class="ex-name">Desenvolvimento haltere</span><span class="ex-sets">4 × 10</span></div><div class="ex-item"><span class="ex-name">Elevação lateral cabo</span><span class="ex-sets">4 × 12</span></div><div class="ex-item"><span class="ex-name">Elevação frontal alternada</span><span class="ex-sets">3 × 12</span></div></div>
+    <div class="card"><div class="card-title">Cardio — logo após</div><div class="ex-item"><span class="ex-name ex-cardio">Caminhada rápida ou elíptico</span><span class="ex-sets">20 min</span></div></div>
+  </div>
+
+  <div id="train-dom" class="train-block">
+    <div class="train-header"><div class="train-name">Domingo</div><div class="train-desc">Descanso ativo — obrigatório</div></div>
+    <div class="card"><div class="card-title">O que fazer</div><div style="font-size:14px;color:var(--text2);line-height:1.7;">40 min de caminhada ao ar livre. Sem academia, sem pressão. O músculo cresce no descanso, não no treino.<br><br>Se quiser: leitura, podcast, ligar pra família. Qualquer coisa fora de trabalho e obrigação. Esse dia é seu.</div></div>
+  </div>
+
+  <div id="train-div" class="train-block">
+    <div class="train-header"><div class="train-name">Divisão</div><div class="train-desc">ABC duplo — 6 dias por semana</div></div>
+    <div class="card"><div class="card-title">Semana completa</div>
+      <div class="row-item"><span class="row-lbl">Segunda</span><span class="row-val" style="color:var(--blue);">A — Peito / Tríceps</span></div>
+      <div class="row-item"><span class="row-lbl">Terça</span><span class="row-val" style="color:var(--green);">B — Costas / Bíceps</span></div>
+      <div class="row-item"><span class="row-lbl">Quarta</span><span class="row-val" style="color:var(--amber);">C — Perna / Ombro</span></div>
+      <div class="row-item"><span class="row-lbl">Quinta</span><span class="row-val" style="color:var(--blue);">A — Peito / Tríceps</span></div>
+      <div class="row-item"><span class="row-lbl">Sexta</span><span class="row-val" style="color:var(--green);">B — Costas / Bíceps</span></div>
+      <div class="row-item"><span class="row-lbl">Sábado</span><span class="row-val" style="color:var(--amber);">C — Perna / Ombro</span></div>
+      <div class="row-item"><span class="row-lbl">Domingo</span><span class="row-val" style="color:var(--text3);">Descanso ativo</span></div>
+    </div>
+  </div>
+  <div class="gap"></div>
+</div>
+
+<!-- NUTRIÇÃO -->
+<div id="sec-nutri" class="section section-pad">
+  <div class="card">
+    <div class="card-title">Macros diários</div>
+    <div class="row-item"><span class="row-lbl">Calorias</span><span class="row-val">2.200 kcal <span class="badge badge-b">déficit</span></span></div>
+    <div class="row-item"><span class="row-lbl">Proteína</span><span class="row-val">200g · 800 kcal <span class="badge badge-g">prioridade</span></span></div>
+    <div class="row-item"><span class="row-lbl">Carboidrato</span><span class="row-val">200g · 800 kcal</span></div>
+    <div class="row-item"><span class="row-lbl">Gordura</span><span class="row-val">65g · 600 kcal</span></div>
+    <div class="row-item"><span class="row-lbl">Água</span><span class="row-val">4 litros/dia <span class="badge badge-g">inegociável</span></span></div>
+    <div class="row-item"><span class="row-lbl">Última refeição</span><span class="row-val">Até 20h</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Dia alimentar completo</div>
+    <div class="row-item"><span class="row-lbl">07h20</span><span class="row-val">3 ovos + aveia 60g + banana</span></div>
+    <div class="row-item"><span class="row-lbl">10h00</span><span class="row-val">Whey 30g + 1 fruta</span></div>
+    <div class="row-item"><span class="row-lbl">13h00</span><span class="row-val">150g frango + arroz + salada</span></div>
+    <div class="row-item"><span class="row-lbl">16h30</span><span class="row-val">Whey 30g + batata doce 80g</span></div>
+    <div class="row-item"><span class="row-lbl">20h00</span><span class="row-val">150g atum/frango + legumes</span></div>
+  </div>
+
+  <!-- FOME -->
+  <div class="card card-green">
+    <div class="card-title" style="color:var(--green);">Estratégia anti-fome</div>
+    <div style="font-size:13px;color:#14532d;line-height:1.6;margin-bottom:12px;">A fome nos primeiros 7 dias é real — o corpo ainda não ajustou. Não é fraqueza, é biologia. Use essas ferramentas:</div>
+    <div style="margin-bottom:10px;">
+      <div style="font-size:12px;font-weight:500;color:var(--green);margin-bottom:6px;">Antes de tudo: bebe 500ml de água</div>
+      <div style="font-size:13px;color:#14532d;line-height:1.5;">80% das vezes que você sente fome fora de hora é sede disfarçada. Bebe primeiro, espera 10 min.</div>
+    </div>
+    <div style="border-top:1px solid var(--green-mid);padding-top:10px;margin-bottom:10px;">
+      <div style="font-size:12px;font-weight:500;color:var(--green);margin-bottom:6px;">Alimentos volume alto, caloria baixa</div>
+      <div style="display:flex;flex-wrap:wrap;">
+        <span class="hunger-pill">Pepino</span><span class="hunger-pill">Alface</span><span class="hunger-pill">Tomate</span><span class="hunger-pill">Abobrinha</span><span class="hunger-pill">Brócolis</span><span class="hunger-pill">Cenoura crua</span><span class="hunger-pill">Caldo de frango</span><span class="hunger-pill">Gelatina zero</span>
+      </div>
+      <div style="font-size:12px;color:#166534;margin-top:6px;">Come à vontade. Zero culpa. Zero conta de caloria.</div>
+    </div>
+    <div style="border-top:1px solid var(--green-mid);padding-top:10px;margin-bottom:10px;">
+      <div style="font-size:12px;font-weight:500;color:var(--green);margin-bottom:6px;">Fome depois do jantar</div>
+      <div style="font-size:13px;color:#14532d;line-height:1.5;">Escova os dentes imediatamente após o jantar. O sinal pro cérebro de "acabou" é forte. Bebe chá sem açúcar (camomila, erva-doce). Vai dormir mais cedo — fome some com sono.</div>
+    </div>
+    <div style="border-top:1px solid var(--green-mid);padding-top:10px;">
+      <div style="font-size:12px;font-weight:500;color:var(--green);margin-bottom:6px;">Proteína mata fome melhor que qualquer coisa</div>
+      <div style="font-size:13px;color:#14532d;line-height:1.5;">Se a fome for real e insuportável, come 2 ovos cozidos ou mais 30g de whey. Proteína extra não vai atrapalhar o déficit — é muito melhor que ceder pro processado.</div>
+    </div>
+  </div>
+
+  <!-- REFEIÇÃO LIVRE -->
+  <div class="free-meal-box">
+    <div class="fm-title">Refeição livre — sábado</div>
+    <div class="fm-text">
+      <strong style="color:#92400e;">1 refeição livre por semana, todo sábado.</strong> Não é trapaça — é estratégia. O reabastecimento calórico uma vez por semana aumenta a leptina (hormônio da saciedade), reseta o metabolismo e elimina a compulsão acumulada da semana.<br><br>
+      <strong style="color:#92400e;">As regras da refeição livre:</strong><br>
+      · Come o que quiser nessa refeição — só ela<br>
+      · Não vira o dia inteiro livre, só uma refeição<br>
+      · De preferência após o treino de sábado<br>
+      · Curte sem culpa — faz parte do plano<br>
+      · Volta ao protocolo no jantar ou na segunda
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 14px 0;">
+    <div class="card" style="margin:0;">
+      <div class="card-title" style="color:var(--green);font-size:13px;">✓ Come sempre</div>
+      <div style="font-size:12px;color:var(--text2);line-height:2;">Frango · Atum · Ovo · Whey · Arroz · Batata doce · Aveia · Azeite · Castanhas · Frutas · Legumes</div>
+    </div>
+    <div class="card" style="margin:0;">
+      <div class="card-title" style="color:var(--red);font-size:13px;">✗ Corta</div>
+      <div style="font-size:12px;color:var(--text2);line-height:2;">Pão · Massa · Açúcar · Fritura · Álcool · Refri · Suco caixinha · Ultra-processado</div>
+    </div>
+  </div>
+  <div class="gap"></div>
+</div>
+
+<!-- SUPLEMENTOS -->
+<div id="sec-supp" class="section section-pad">
+  <div class="card">
+    <div class="card-title">Suplementos básicos</div>
+    <div class="supp-grid">
+      <div class="supp-card"><div class="supp-name">Whey</div><div class="supp-dose">30g · 2× ao dia</div><div class="supp-why">Café da manhã e pós-treino. Base da ingestão proteica.</div></div>
+      <div class="supp-card"><div class="supp-name">Creatina</div><div class="supp-dose">5g · todo dia</div><div class="supp-why">Mesmo sem treinar. Força, volume e recuperação.</div></div>
+      <div class="supp-card"><div class="supp-name">Cafeína</div><div class="supp-dose">200mg · 30 min antes</div><div class="supp-why">Café forte resolve. Ou cápsula manipulada.</div></div>
+      <div class="supp-card"><div class="supp-name">Ômega-3</div><div class="supp-dose">2g · com almoço</div><div class="supp-why">Anti-inflamatório, cortisol, saúde cardíaca.</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" style="color:var(--green);">Manipulados — prioridade máxima</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">Pede em farmácia de manipulação com esses nomes exatos. Peça todos juntos — ficam baratos no manipulado.</div>
+    <div class="supp-grid">
+      <div class="supp-card supp-priority"><div class="supp-name">Ashwagandha KSM-66</div><div class="supp-dose">600mg · à noite</div><div class="supp-why">Extrato KSM-66 (não genérico). Reduz cortisol, sobe testosterona, melhora sono. Seu maior aliado agora.</div></div>
+      <div class="supp-card supp-priority"><div class="supp-name">Magnésio Bisglicinato</div><div class="supp-dose">400mg · à noite</div><div class="supp-why">Não pede óxido. Sono profundo, recuperação, ansiedade, queda de cabelo por estresse.</div></div>
+      <div class="supp-card supp-priority"><div class="supp-name">Zinco Bisglicinato</div><div class="supp-dose">30mg · com jantar</div><div class="supp-why">Quelato. Nunca em jejum. Testosterona, imunidade, recuperação muscular.</div></div>
+      <div class="supp-card supp-priority"><div class="supp-name">D3 + K2 MK-7</div><div class="supp-dose">5.000 UI + 100 mcg</div><div class="supp-why">Juntos numa cápsula, com refeição gordurosa. Testosterona, humor, imunidade.</div></div>
+    </div>
+  </div>
+
+  <div class="card card-amber">
+    <div class="card-title" style="color:var(--amber);">Exame de sangue — essa semana</div>
+    <div style="font-size:13px;color:#78350f;margin-bottom:10px;">Endocrinologista ou clínica de check-up. Pede esse painel completo:</div>
+    <div class="row-item"><span class="row-lbl">Testosterona</span><span class="row-val">Total e livre</span></div>
+    <div class="row-item"><span class="row-lbl">Cortisol</span><span class="row-val">Matinal (coleta às 8h)</span></div>
+    <div class="row-item"><span class="row-lbl">Tireoide</span><span class="row-val">TSH + T4 livre</span></div>
+    <div class="row-item"><span class="row-lbl">Vitamina D</span><span class="row-val">25-OH vitamina D</span></div>
+    <div class="row-item"><span class="row-lbl">Zinco sérico</span><span class="row-val">+ ferro e ferritina</span></div>
+    <div class="row-item"><span class="row-lbl">Hemograma</span><span class="row-val">Completo</span></div>
+  </div>
+  <div class="gap"></div>
+</div>
+
+<!-- CHECKLIST + ROTINA -->
+<div id="sec-rotina" class="section section-pad">
+  <div class="card">
+    <div class="card-title">Checklist do dia</div>
+    <div id="checklist-container"></div>
+    <div style="margin-top:12px;">
+      <div class="prog-label"><span id="chk-count">0/10 tarefas</span><span id="chk-pct">0%</span></div>
+      <div class="prog-bar"><div class="prog-fill" id="chk-bar" style="width:0%;"></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Rotina — dias de treino</div>
+    <div class="tl">
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-time">07h00</div><div class="tl-text">Acorda. 500ml de água imediato.</div><div class="tl-sub">Sem celular por 20 min.</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-time">07h20</div><div class="tl-text">Café da manhã proteico.</div><div class="tl-sub">3 ovos + aveia + fruta. Ou whey + aveia.</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-time">07h50</div><div class="tl-text">Cafeína pré-treino.</div><div class="tl-sub">Café forte ou 200mg cápsula. Espera 30 min.</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-time">08h20</div><div class="tl-text">Treino — 45 a 55 min.</div><div class="tl-sub">Fone, foco total. 45 segundos de descanso máximo.</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-time">09h15</div><div class="tl-text">Cardio — 20 min zona 2.</div><div class="tl-sub">Esteira inclinada, bike ou elíptico.</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-time">09h40</div><div class="tl-text">Banho + whey pós-treino.</div><div class="tl-sub">30g whey. Pronto pro trabalho.</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-time">10h00</div><div class="tl-text">Trabalho.</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-time">13h00</div><div class="tl-text">Almoço completo.</div><div class="tl-sub">Sem tela por 20 min. Mastiga devagar.</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-time">16h30</div><div class="tl-text">Lanche — whey ou ovos.</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-time">20h00</div><div class="tl-text">Jantar leve.</div><div class="tl-sub">Proteína + legumes. Última refeição. Escova os dentes logo depois.</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-time">21h30</div><div class="tl-text">Manipulados noturnos.</div><div class="tl-sub">Ashwagandha + magnésio + zinco.</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-time">22h30</div><div class="tl-text">Tela desliga. Dorme.</div><div class="tl-sub">Celular fora do quarto. 7–8h de sono é parte do protocolo.</div></div>
+    </div>
+  </div>
+  <div class="gap"></div>
+</div>
+
+<!-- GYMRATS + MOTIVAÇÃO -->
+<div id="sec-gym" class="section section-pad">
+  <div class="card">
+    <div class="card-title">Configurar o desafio — GymRats</div>
+    <div class="gr-step"><div class="gr-num">1</div><div class="gr-text">Abre o GymRats → toca em <strong>Create Challenge</strong></div></div>
+    <div class="gr-step"><div class="gr-num">2</div><div class="gr-text">Nome: <strong>Modo Fisiculturista 30D</strong></div></div>
+    <div class="gr-step"><div class="gr-num">3</div><div class="gr-text">Início: <strong>30 de março · Fim: 28 de abril</strong></div></div>
+    <div class="gr-step"><div class="gr-num">4</div><div class="gr-text">Scoring: <strong>Most Workouts</strong> — quem treina mais dias ganha</div></div>
+    <div class="gr-step"><div class="gr-num">5</div><div class="gr-text">Convida os amigos e manda o código do grupo</div></div>
+    <div class="gr-box"><div class="gr-box-lbl">Regra do grupo</div><div class="gr-box-val">Registra o treino + foto no GymRats</div><div class="gr-box-sub">Domingo = descanso obrigatório, não conta contra ninguém</div></div>
+  </div>
+
+  <div class="card card-amber">
+    <div class="card-title" style="color:var(--amber);">Mensagem pra mandar agora</div>
+    <div style="font-size:13px;color:#78350f;line-height:1.7;background:white;border-radius:8px;padding:12px;font-style:italic;">"Vou começar um protocolo de 30 dias pesado na segunda. Quero montar um grupo no GymRats pra se cobrar junto. É 6× por semana, treino + cardio todo dia. Quem tiver dentro me chama."</div>
+  </div>
+
+  <div class="mot-card">
+    <div class="mot-title">A regra dos 5 minutos</div>
+    <div class="mot-text">Não precisa querer treinar. Só precisa chegar. Coloca o tênis e vai. Treina 5 minutos. Se quiser ir embora depois, pode — sem culpa. Em 95% das vezes você vai terminar o treino inteiro.</div>
+  </div>
+
+  <div class="mot-card">
+    <div class="mot-title">A balança mente na semana 1</div>
+    <div class="mot-text">O peso pode subir por retenção de água. Isso é normal e temporário. Olha pro espelho, pra como a roupa tá ficando, pra como você tá dormindo. Esses são os números reais. Pesa só toda segunda de manhã, em jejum.</div>
+  </div>
+
+  <div class="mot-card">
+    <div class="mot-title">Um dia ruim não é semana ruim</div>
+    <div class="mot-text">Comeu errado? Não treinou? Tudo bem. Volta amanhã. O erro não é errar — é transformar 1 dia ruim em semana de abandono. Um dia não desfaz nada. Simplesmente volta.</div>
+  </div>
+
+  <div class="mot-card">
+    <div class="mot-title">Entre o dia 10 e 14</div>
+    <div class="mot-text">Vai ter uma semana que você vai querer largar tudo. A animação inicial passou e o resultado ainda não chegou. Esse é o momento que separa quem transforma de quem sempre recomeça. Aguentar essa semana é o protocolo. Só isso.</div>
+  </div>
+
+  <div class="mot-card">
+    <div class="mot-title">O treino não é punição</div>
+    <div class="mot-text">Você começou isso porque estava cansado de se sentir fora de controle. O treino é a única coisa que clareia a cabeça, sobe a testosterona, baixa o cortisol e devolve a sensação de ser o autor da sua vida. Cada treino feito é uma prova de que você é capaz — antes mesmo de ver o resultado no espelho.</div>
+  </div>
+  <div class="gap"></div>
+</div>
+
+</div>
+
+<!-- TAB BAR -->
+<div class="tabbar">
+  <button class="tab active" onclick="showSec('home',this)"><div class="tab-icon">⚡</div><span>Início</span></button>
+  <button class="tab" onclick="showSec('treinos',this)"><div class="tab-icon">💪</div><span>Treinos</span></button>
+  <button class="tab" onclick="showSec('nutri',this)"><div class="tab-icon">🥩</div><span>Nutrição</span></button>
+  <button class="tab" onclick="showSec('supp',this)"><div class="tab-icon">💊</div><span>Suplementos</span></button>
+  <button class="tab" onclick="showSec('rotina',this)"><div class="tab-icon">✅</div><span>Checklist</span></button>
+  <button class="tab" onclick="showSec('gym',this)"><div class="tab-icon">🏆</div><span>GymRats</span></button>
+</div>
+
+<script>
+const START = new Date('2025-03-30');
+
+function getDayNum() {
+  const now = new Date(); now.setHours(0,0,0,0);
+  const diff = Math.floor((now - START) / 86400000) + 1;
+  return Math.max(1, Math.min(30, diff));
+}
+
+function updateHeader() {
+  const days = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  const months = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  const now = new Date();
+  document.getElementById('hdr-day').textContent = days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()];
+  document.getElementById('day-count').textContent = getDayNum();
+}
+
+function showSec(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  btn.classList.add('active');
+  document.querySelector('.content').scrollTop = 0;
+}
+
+function showTrain(id, btn) {
+  document.querySelectorAll('.train-block').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.train-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('train-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// MONTH GRID
+const saved30 = JSON.parse(localStorage.getItem('days30v2') || '{}');
+const mg = document.getElementById('month-grid');
+const todayDate = new Date(); todayDate.setHours(0,0,0,0);
+for (let i = 0; i < 30; i++) {
+  const d = new Date(START); d.setDate(d.getDate() + i);
+  const isRest = d.getDay() === 0;
+  const isToday = d.toDateString() === todayDate.toDateString();
+  const isFuture = d > todayDate;
+  const isDone = saved30[i];
+  const div = document.createElement('div');
+  let cls = 'mday';
+  if (isRest) cls += ' rest-day';
+  else if (isDone) cls += ' done';
+  else if (isToday) cls += ' today-mark';
+  else if (isFuture) cls += ' future';
+  div.className = cls;
+  div.textContent = isRest ? 'off' : d.getDate();
+  if (!isRest && !isFuture) {
+    div.onclick = () => {
+      saved30[i] = !saved30[i];
+      try { localStorage.setItem('days30v2', JSON.stringify(saved30)); } catch(e) {}
+      div.className = 'mday' + (saved30[i] ? ' done' : (isToday ? ' today-mark' : ''));
+    };
+  }
+  mg.appendChild(div);
+}
+
+// CHECKLIST
+const checks = [
+  { text: 'Acordou às 7h', sub: '07h00' },
+  { text: 'Bebeu 500ml de água ao acordar', sub: '07h00 — antes do celular' },
+  { text: 'Tomou café da manhã proteico', sub: '3 ovos + aveia ou whey' },
+  { text: 'Treinou (musculação 45–55 min)', sub: '45s descanso máximo entre séries' },
+  { text: 'Fez o cardio de 20 min', sub: 'Esteira, bike ou elíptico' },
+  { text: 'Tomou whey pós-treino', sub: '30g com água' },
+  { text: 'Proteína nas 3 refeições principais', sub: 'Frango, atum, ovo ou whey' },
+  { text: 'Bebeu 4 litros de água', sub: 'Garrafa do lado o dia todo' },
+  { text: 'Última refeição antes das 20h', sub: 'Escova os dentes logo depois' },
+  { text: 'Manipulados noturnos + celular desligado às 22h30', sub: 'Ashwagandha + magnésio + zinco' },
+];
+
+const chkKey = 'chk_v2_' + new Date().toDateString();
+const savedChk = JSON.parse(localStorage.getItem(chkKey) || '{}');
+const container = document.getElementById('checklist-container');
+
+function updateBar() {
+  const done = Object.values(savedChk).filter(Boolean).length;
+  const pct = Math.round((done / checks.length) * 100);
+  document.getElementById('chk-count').textContent = done + '/' + checks.length + ' tarefas';
+  document.getElementById('chk-pct').textContent = pct + '%';
+  document.getElementById('chk-bar').style.width = pct + '%';
+}
+
+checks.forEach((c, i) => {
+  const div = document.createElement('div');
+  div.className = 'check-item';
+  div.innerHTML = `<div class="chk-box ${savedChk[i] ? 'on' : ''}" id="chk${i}"></div><div><div class="chk-text ${savedChk[i] ? 'done' : ''}">${c.text}</div><div class="chk-sub">${c.sub}</div></div>`;
+  div.onclick = () => {
+    savedChk[i] = !savedChk[i];
+    try { localStorage.setItem(chkKey, JSON.stringify(savedChk)); } catch(e) {}
+    document.getElementById('chk'+i).className = 'chk-box ' + (savedChk[i] ? 'on' : '');
+    div.querySelector('.chk-text').className = 'chk-text ' + (savedChk[i] ? 'done' : '');
+    updateBar();
+  };
+  container.appendChild(div);
+});
+updateBar();
+updateHeader();
+</script>
+</body>
+</html>
